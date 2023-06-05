@@ -1,19 +1,22 @@
 import  {Block} from "./block"
-import { GENEIS_DATA } from "./config"
+import { GENEIS_DATA,MINE_RATE } from "./config"
 import { cryptoHash } from "./crypto-hash"
 
 describe('Block',()=>{
-    const timestamp = 'a-date'
+    const timestamp = 2000
     const lastHash = 'foo-hash'
     const hash = 'bar-hash'
     const data = ['blockchain','data']
- 
-    const block = new Block({timestamp,lastHash,hash,data})
+    const nonce = 1
+    const difficulty = 1
+    const block = new Block({timestamp,lastHash,hash,data,nonce,difficulty})
     it('has as timestamp, lastHash, hash, and data property',()=>{
         expect(block.timestamp).toEqual(timestamp)
         expect(block.lastHash).toEqual(lastHash)
         expect(block.hash).toEqual(hash)
         expect(block.data).toEqual(data)
+        expect(block.nonce).toEqual(nonce)
+        expect(block.difficulty).toEqual(difficulty)
     })
     describe('genesis()',()=>{
         const genesisBlock = Block.genesis()
@@ -41,9 +44,32 @@ describe('Block',()=>{
             expect(mineBlock.timestamp).not.toEqual(undefined)
         })
         it('creates a SHA-256 hash based on the proper inputs',()=>{
-            expect(mineBlock.hash).toEqual(cryptoHash(mineBlock.timestamp,lastBlock.hash,data))
+            expect(mineBlock.hash).toEqual(
+                cryptoHash(mineBlock.timestamp,mineBlock.nonce,mineBlock.difficulty,lastBlock.hash,data)
+            )
+
+        })
+        it('set a hash that match the difficulty criteria',()=>{
+            expect(mineBlock.hash?.substring(0,mineBlock.difficulty)).toEqual('0'.repeat(mineBlock.difficulty))
+                
+            
+
+        })
+
+    describe('adjustDifficulty',()=>{
+        it('raise the difficulty for a quickly mined block',()=>{
+            expect(Block.adjustDifficulty({
+                originalBlock:block,
+                timestamp:block.timestamp+MINE_RATE-100
+            
+            })).toEqual(block.difficulty+1)
+        })
+        it('lower the difficulty for a slowly mined block',()=>{
+            expect(Block.adjustDifficulty({
+                originalBlock:block,
+                timestamp:block.timestamp+MINE_RATE+100
+            })).toEqual(block.difficulty-1)
         })
     })
-    
-
+})
 })
