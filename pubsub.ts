@@ -4,19 +4,37 @@ const CHANNELS = {
     TEST:"TEST",
     BLOCKCHAIN:"BLOCKCHAIN"
 }
-class PubSub {
+export class PubSub {
     publisher: any
     subscriber: any
-    constructor(){
+    blockchain:any
+    constructor({blockchain}:any){
+        this.blockchain = blockchain
         this.publisher = redis.createClient()
         this.subscriber = redis.createClient()
         this.publisher.connect()
         this.subscriber.connect()
-        this.subscriber.subscribe(CHANNELS.TEST,(channel:any,message:any)=>this.handleMessage(channel,message))
+        this.subscribeToChannel()
     }
     handleMessage(channel:any,message:any){
         console.log(`Message:${channel}.${message}`)
+        const parsedMessage = JSON.parse(message)
+        if(channel === CHANNELS.BLOCKCHAIN){
+            this.blockchain.replaceChain(parsedMessage)
+        }
+    }
+    subscribeToChannel(){
+        Object.values(CHANNELS).forEach(channel=>{
+            this.subscriber.subscribe(channel,(channel:any,message:any)=>this.handleMessage(channel,message))
+        })
+    }
+    publish({channel,message}:any){
+        this.publisher.publish(channel,message)
+    }
+    broadcastChain(){
+        this.publish({
+            channel:CHANNELS.BLOCKCHAIN,
+            message:JSON.stringify(this.blockchain.chain)
+        })
     }
 }
-const testPubSub = new PubSub()
-setTimeout(()=>{testPubSub.publisher.publish(CHANNELS.TEST,"concac")},1000)
