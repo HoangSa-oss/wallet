@@ -6,7 +6,8 @@
   "scripts": {
     "node": "ts-node-dev pubsub.ts",
     "start": "ts-node-dev index.ts",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "redis": "redis-server"
   },
   "jest": {
     "preset": "ts-jest",

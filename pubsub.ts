@@ -10,14 +10,15 @@ export class PubSub {
     blockchain:any
     constructor({blockchain}:any){
         this.blockchain = blockchain
-        this.publisher = redis.createClient()
+        this.publisher = redis.createClient({
+            url: 'redis://localhost:6379'})
         this.subscriber = redis.createClient()
         this.publisher.connect()
         this.subscriber.connect()
         this.subscribeToChannel()
     }
     handleMessage(channel:any,message:any){
-        console.log(`Message:${channel}.${message}`)
+        console.log(message)
         const parsedMessage = JSON.parse(message)
         if(channel === CHANNELS.BLOCKCHAIN){
             this.blockchain.replaceChain(parsedMessage)
@@ -25,7 +26,7 @@ export class PubSub {
     }
     subscribeToChannel(){
         Object.values(CHANNELS).forEach(channel=>{
-            this.subscriber.subscribe(channel,(channel:any,message:any)=>this.handleMessage(channel,message))
+            this.subscriber.subscribe(channel,(message:any)=>this.handleMessage(channel,message))
         })
     }
     publish({channel,message}:any){
