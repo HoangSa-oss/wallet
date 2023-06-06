@@ -1,5 +1,6 @@
 import { GENEIS_DATA, MINE_RATE } from "./config"
 import { cryptoHash } from "./crypto-hash"
+var hexToBinary = require('hex-to-binary');
 
 interface IBlock {
     timestamp :any
@@ -31,14 +32,16 @@ class Block implements IBlock{
     static mineBlock({lastBlock,data}:{lastBlock:any,data:any}){
         let hash,timestamp
         // const timestamp = Date.now()
-        const lastHash = lastBlock.hash
-        const {difficulty} = lastBlock
+        let lastHash = lastBlock.hash
+        let {difficulty} = lastBlock
         let nonce = 0  
         do {
+         
             nonce++
             timestamp=Date.now()
+            difficulty = Block.adjustDifficulty({originalBlock:lastBlock,timestamp})
             hash = cryptoHash(timestamp,lastHash,data,nonce,difficulty)
-        } while (hash.substring(0,difficulty)!=='0'.repeat(difficulty));
+        } while (hexToBinary(hash).substring(0,difficulty)!=='0'.repeat(difficulty));
         return new this({
             timestamp,
             lastHash,

@@ -1,6 +1,7 @@
 import  {Block} from "./block"
 import { GENEIS_DATA,MINE_RATE } from "./config"
 import { cryptoHash } from "./crypto-hash"
+var hexToBinary = require('hex-to-binary');
 
 describe('Block',()=>{
     const timestamp = 2000
@@ -50,9 +51,7 @@ describe('Block',()=>{
 
         })
         it('set a hash that match the difficulty criteria',()=>{
-            expect(mineBlock.hash?.substring(0,mineBlock.difficulty)).toEqual('0'.repeat(mineBlock.difficulty))
-                
-            
+            expect(hexToBinary(mineBlock.hash).substring(0,mineBlock.difficulty)).toEqual('0'.repeat(mineBlock.difficulty))             
 
         })
 

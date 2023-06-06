@@ -1,5 +1,6 @@
 import {Blockchain} from './block-chain'
 import { Block } from './block'
+import { cryptoHash } from './crypto-hash';
 
 describe('Blockchain',()=>{
     let blockchain:any, newChain: Blockchain, originalChain: any, errorMock;
@@ -51,6 +52,22 @@ describe('Blockchain',()=>{
             expect(Blockchain.isValidChain(blockchain.chain)).toBe(false);
           });
         });
+        describe('and the chain contains a block with a jump difficulty',()=>{
+            it('return false',()=>{
+                const lastBlock = blockchain.chain[blockchain.chain.length-1]
+                const lastHash = lastBlock.hash
+                const timestamp = Date.now()
+                const nonce = 0
+                const data: any[] = []
+                const difficulty = lastBlock.difficulty-3
+                const hash = cryptoHash(timestamp,lastHash,difficulty,nonce,data)
+                const badBlock = new Block({
+                    timestamp,lastHash,hash,nonce,difficulty,data
+                })
+                blockchain.chain.push(badBlock)
+                expect(Blockchain.isValidChain(blockchain.chain)).toBe(false)
+            })
+        })
       })
       describe('replaceChain()',()=>{
             let errorMock: jest.Mock<any, any, any>,logMock: jest.Mock<any, any, any>
