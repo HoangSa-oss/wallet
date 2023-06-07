@@ -1,5 +1,5 @@
-import { GENEIS_DATA, MINE_RATE } from "./config"
-import { cryptoHash } from "./crypto-hash"
+import { GENEIS_DATA, MINE_RATE } from "../config"
+import { cryptoHash } from "../util/crypto-hash"
 var hexToBinary = require('hex-to-binary');
 
 interface IBlock {

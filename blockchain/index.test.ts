@@ -1,6 +1,6 @@
-import {Blockchain} from './block-chain'
+import {Blockchain} from '.'
 import { Block } from './block'
-import { cryptoHash } from './crypto-hash';
+import { cryptoHash } from '../util/crypto-hash';
 
 describe('Blockchain',()=>{
     let blockchain:any, newChain: Blockchain, originalChain: any, errorMock;

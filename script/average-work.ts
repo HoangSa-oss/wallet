@@ -1,4 +1,4 @@
-import { Blockchain } from "./block-chain";
+import { Blockchain } from "../blockchain/index";
 
 
 const blockchain = new Blockchain()
